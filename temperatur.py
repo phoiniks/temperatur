@@ -26,10 +26,12 @@ zeit = int(argv[1]) * 60
 
 print("Laufzeit von {:s}: {:d}\n".format(argv[0][2:], zeit))
 
+countdown = zeit
 for s in range(zeit):
     temperatur = check_output(["cat", "/sys/class/thermal/thermal_zone0/temp"])
-    temperatur = float("{:2.2f}".format(float(temperatur.decode("utf-8")) / 1000))
-    print("\r{}".format(temperatur), end='')
+    temperatur = "{:.2f}".format(float(temperatur.decode("utf-8")) / 1000)
+    print("\r{} Grad Celsius, noch {} Messungen".format(temperatur, countdown), end='')
     cur.execute(insert, (temperatur,))
     sleep(1)
+    countdown -= 1
     con.commit()
