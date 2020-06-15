@@ -23,8 +23,9 @@ insert = "INSERT INTO {} (temperatur) VALUES(?)".format(tabelle)
 
 # Laufzeit in Minuten als Parameter, z.B.: ./temperatur.py 10 # Programm läuft 10 Minuten
 zeit = int(argv[1]) * 60
-
-print("Laufzeit von {:s}: {:d}\n".format(argv[0][2:], zeit))
+stunden = zeit / 3600
+print("\n" * 60)
+print("Laufzeit von {:s}: {:d} Sekunden, also etwa {:.2f} Stunden\n".format(argv[0][2:], zeit, stunden))
 
 countdown = zeit
 for s in range(zeit):
