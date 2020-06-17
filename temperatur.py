@@ -36,3 +36,5 @@ for s in range(zeit):
     sleep(1)
     countdown -= 1
     con.commit()
+
+print("\n")
