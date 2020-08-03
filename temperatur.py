@@ -15,11 +15,11 @@ cur = con.cursor()
 
 tabelle = gethostname()
 
-create = "CREATE TABLE IF NOT EXISTS {}(id INTEGER PRIMARY KEY, temperatur REAL, lokalzeit DATE DEFAULT(DATETIME('NOW', 'LOCALTIME')))".format(tabelle)
+create = "CREATE TABLE IF NOT EXISTS {}(id INTEGER PRIMARY KEY, temperatur REAL, pwm INTEGER, lokalzeit DATE DEFAULT(DATETIME('NOW', 'LOCALTIME')))".format(tabelle)
 
 cur.execute(create)
 
-insert = "INSERT INTO {} (temperatur) VALUES(?)".format(tabelle)
+insert = "INSERT INTO {} (temperatur, pwm) VALUES(?, ?)".format(tabelle)
 
 # Laufzeit in Minuten als Parameter, z.B.: ./temperatur.py 10 # Programm läuft 10 Minuten
 zeit = int(argv[1]) * 60
@@ -29,10 +29,12 @@ print("Laufzeit von {:s}: {:d} Sekunden, also etwa {:.2f} Stunden\n".format(argv
 
 countdown = zeit
 for s in range(zeit):
+    pwm = check_output(["cat", "/sys/devices/pwm-fan/target_pwm"])
+    pwm = "{:3d}".format(int(pwm.decode("utf-8")))
     temperatur = check_output(["cat", "/sys/class/thermal/thermal_zone0/temp"])
     temperatur = "{:.2f}".format(float(temperatur.decode("utf-8")) / 1000)
-    print("\r{} Grad Celsius, noch {} Messungen".format(temperatur, countdown), end='')
-    cur.execute(insert, (temperatur,))
+    print("\r{} Grad Celsius, PWM: {}, noch {} Messungen".format(temperatur, pwm, countdown), end='')
+    cur.execute(insert, (temperatur, pwm))
     sleep(1)
     countdown -= 1
     con.commit()
