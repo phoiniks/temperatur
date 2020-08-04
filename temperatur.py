@@ -1,14 +1,29 @@
 #!/usr/bin/python3
 from os import remove
-from os.path import exists
+from os.path import exists, expanduser, join
+from shutil import copy
 from socket import gethostname
 from subprocess import check_output
 from sys import argv
 from sqlite3 import connect
-from time import sleep
+from time import sleep, strftime
+import locale
 
-if exists("computer.db"):
-    remove("computer.db")
+
+home = expanduser("~")
+
+locale.setlocale(locale.LC_ALL, "")
+
+lokalzeit = strftime("%A_%d_%B_%Y_%H_%M_Uhr_und_%S_Sekunden")
+print(lokalzeit)
+
+datenbank = "computer_" + lokalzeit + ".db"
+datenbank = join(home, datenbank)
+
+print("Datenbank: {}\n".format(datenbank))
+
+if exists("computer.*"):
+    remove("computer.*")
 
 con = connect("computer.db")
 cur = con.cursor()
@@ -38,5 +53,8 @@ for s in range(zeit):
     sleep(1)
     countdown -= 1
     con.commit()
+
+print("Kopiere Sicherheitskopie von computer.db nach {}.\n".format(home))
+copy("computer.db", datenbank)
 
 print("\n")
